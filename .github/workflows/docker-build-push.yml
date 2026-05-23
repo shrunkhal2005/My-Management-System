@@ -1,0 +1,38 @@
+name: Build and push Docker image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: '21'
+
+    - name: Build with Maven
+      run: mvn -B package -DskipTests
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository_owner }}/jfx-app:latest
+          ghcr.io/${{ github.repository_owner }}/jfx-app:${{ github.sha }}
+        cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/jfx-app:latest
+        cache-to: type=inline
+
+    - name: Image info
+      run: echo "Image pushed to GitHub Container Registry"
+
+# Notes: Set repository permissions and store GHCR credentials in repository secrets:
+# - GHCR_USERNAME (optional) and CR_PAT (personal access token) or use GITHUB_TOKEN with appropriate permissions.
