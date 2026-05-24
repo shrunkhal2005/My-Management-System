@@ -1,59 +1,42 @@
-# Hospital Management System (HMS)
+# My Management System
 
-A Spring Boot hospital management backend with a deployable browser frontend.
+This repository is now organized as a small microservices parent project instead of one monolith.
 
-## Live App
+## Current structure
 
-The deployed website is served from the Spring Boot app itself.
+- `pom.xml` - parent Maven project
+- `auth-service/` - authentication service on port `8081`
+- `user-service/` - user profile service on port `8082`
+- `legacy/` - archived scripts, old docs, and prior monolith support files
 
-- Homepage: `/`
-- Health: `/health`
-- Users API: `/api/users`
+## Service responsibilities
 
-## What is included
+- `auth-service`
+	- Own database: `auth_db`
+	- Login and token validation APIs
+	- Can call `user-service` when needed
+- `user-service`
+	- Own database: `user_db`
+	- User profile APIs
+	- Can call `auth-service` to validate tokens
 
-- Browser UI for viewing, creating, searching, and deleting users
-- REST API for the same data
-- JavaFX desktop app still exists in the repo for local desktop use
+## Run
 
-## Local run
+Run each service in its own terminal:
 
 ```powershell
-C:\Users\Dell\.maven\maven-3.9.16\bin\mvn spring-boot:run
+cd d:\jfk(microservices)\auth-service
+mvn spring-boot:run
 ```
 
-Then open:
-
-```text
-http://localhost:8080/
+```powershell
+cd d:\jfk(microservices)\user-service
+mvn spring-boot:run
 ```
 
-## Deployment notes
+## Notes
 
-The app is ready for Render or any Docker host.
-
-If you want database persistence on the hosted site, set these environment variables on the server:
-
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
-- `PORT` if the platform requires it
-
-If those are not set, the app can still start with the embedded H2 fallback for demo use.
-
-## Desktop launcher
-
-`Launch-HMS.bat` is the legacy local JavaFX launcher. It opens the desktop app, not the browser site.
-
-## Main source files
-
-- `src/main/java/com/example/SpringBootTest.java` - backend and homepage entrypoint
-- `src/main/java/com/example/controller/UserController.java` - REST API
-- `src/main/resources/static/index.html` - browser frontend
-- `src/main/resources/static/app.js` - frontend API calls
-- `src/main/resources/static/styles.css` - frontend styling
-
-## Status
-
-The project now includes both the backend and a real web frontend that can be deployed publicly.
+- The old monolith code has been removed from the root to keep the repository focused on the two services.
+- The services currently use H2 file databases so each service has its own local persistence layer.
+- The token flow is still a scaffold and can be upgraded to JWT or OAuth next.
 
