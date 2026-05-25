@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="grain"></div>
+
+  <main class="app-shell">
+    <header class="topbar card">
+      <div>
+        <p class="eyebrow">My Management System</p>
+        <h1>Operations portal for auth and user services</h1>
+        <p class="lede">
+          Use this dashboard to sign in, validate tokens, inspect auth users, and reach the user service through the auth gateway.
+        </p>
+      </div>
+      <div class="topbar-meta">
+        <span class="pill pill-live" id="serviceState">Service online</span>
+        <span class="pill">Auth service UI</span>
+      </div>
+    </header>
+
+    <section class="stats-grid">
+      <article class="card stat-card">
+        <span class="stat-label">Auth users</span>
+        <strong id="authUserCount" class="stat-value">0</strong>
+        <p class="stat-note">Loaded from <span>/auth/users</span></p>
+      </article>
+      <article class="card stat-card">
+        <span class="stat-label">User proxy</span>
+        <strong id="proxyState" class="stat-value status-warn">Checking</strong>
+        <p class="stat-note">Calls <span>/auth/users/{id}</span></p>
+      </article>
+      <article class="card stat-card">
+        <span class="stat-label">Token checks</span>
+        <strong id="tokenState" class="stat-value status-warn">Idle</strong>
+        <p class="stat-note">Validates bearer-style demo tokens</p>
+      </article>
+    </section>
+
+    <section class="workspace-grid">
+      <section class="card panel panel-hero">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">Authenticate</p>
+            <h2>Login and token validator</h2>
+          </div>
+          <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh data</button>
+        </div>
+
+        <div class="auth-grid">
+          <form id="loginForm" class="stack">
+            <label>
+              Username
+              <input id="loginUsername" type="text" placeholder="alice" autocomplete="username" required />
+            </label>
+            <label>
+              Password
+              <input id="loginPassword" type="password" placeholder="password1" autocomplete="current-password" required />
+            </label>
+            <button class="btn btn-primary" type="submit">Login</button>
+          </form>
+
+          <form id="tokenForm" class="stack">
+            <label>
+              Token
+              <input id="tokenInput" type="text" placeholder="token-alice-123" />
+            </label>
+            <button class="btn btn-secondary" type="submit">Validate token</button>
+          </form>
+        </div>
+
+        <div class="response-box" id="responseBox">
+          <p class="response-empty">Response output will appear here.</p>
+        </div>
+      </section>
+
+      <aside class="card panel panel-side">
+        <div class="panel-head compact">
+          <div>
+            <p class="section-kicker">Gateway</p>
+            <h2>User profile lookup</h2>
+          </div>
+        </div>
+
+        <form id="lookupForm" class="stack">
+          <label>
+            User ID
+            <input id="lookupId" type="number" min="1" placeholder="1" />
+          </label>
+          <button class="btn btn-primary" type="submit">Fetch profile</button>
+        </form>
+
+        <div class="mini-card">
+          <p class="mini-title">Sample routes</p>
+          <ul class="route-list">
+            <li>/auth/login</li>
+            <li>/auth/validate-token</li>
+            <li>/auth/users</li>
+            <li>/auth/users/{id}</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Data</p>
+          <h2>Auth users</h2>
+        </div>
+        <input id="searchInput" class="search" type="search" placeholder="Search users" />
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Password</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

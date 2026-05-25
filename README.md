@@ -34,6 +34,17 @@ cd d:\jfk(microservices)\user-service
 mvn spring-boot:run
 ```
 
+## UI
+
+The browser UI is served from the auth service root at `http://localhost:8081/`.
+
+It lets you:
+
+- log in through `/auth/login`
+- validate tokens through `/auth/validate-token`
+- browse auth users through `/auth/users`
+- fetch user profiles through `/auth/users/{id}`
+
 ## Docker
 
 The root [Dockerfile](Dockerfile) builds one service at a time using the `SERVICE_DIR` build argument.
