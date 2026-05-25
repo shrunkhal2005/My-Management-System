@@ -3,3 +3,8 @@
 .DS_Store
 .idea/
 .vscode/
+target/
+auth-service/data/
+user-service/data/
+*.mv.db
+*.trace.db

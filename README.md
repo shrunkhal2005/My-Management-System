@@ -34,6 +34,22 @@ cd d:\jfk(microservices)\user-service
 mvn spring-boot:run
 ```
 
+## Docker
+
+The root [Dockerfile](Dockerfile) builds one service at a time using the `SERVICE_DIR` build argument.
+
+Build `auth-service`:
+
+```powershell
+docker build --build-arg SERVICE_DIR=auth-service -t my-management-auth .
+```
+
+Build `user-service`:
+
+```powershell
+docker build --build-arg SERVICE_DIR=user-service -t my-management-user .
+```
+
 ## Notes
 
 - The old monolith code has been removed from the root to keep the repository focused on the two services.

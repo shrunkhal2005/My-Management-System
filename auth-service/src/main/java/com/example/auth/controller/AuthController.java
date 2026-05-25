@@ -31,13 +31,13 @@ public class AuthController {
         }
 
         return authUserRepository.findByUsername(payload.getUsername())
-                .filter(user -> user.isEnabled() && user.getPassword().equals(payload.getPassword()))
-                .map(user -> ResponseEntity.ok(new LoginResponse(
-                        "token-" + user.getUsername() + "-" + System.currentTimeMillis(),
-                        "Bearer",
-                        user.getUsername()
-                )))
-                .orElse(ResponseEntity.status(401).body(Map.of("error", "invalid_credentials")));
+            .filter(user -> user.isEnabled() && user.getPassword().equals(payload.getPassword()))
+            .map(user -> ResponseEntity.ok((Object) new LoginResponse(
+                "token-" + user.getUsername() + "-" + System.currentTimeMillis(),
+                "Bearer",
+                user.getUsername()
+            )))
+            .orElseGet(() -> ResponseEntity.status(401).body(Map.of("error", "invalid_credentials")));
     }
 
     @GetMapping("/validate-token")
