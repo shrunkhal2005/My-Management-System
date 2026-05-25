@@ -6,6 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.example.auth.service.AccessTokenService;
 
 @SpringBootApplication
 public class AuthApplication {
@@ -21,5 +24,12 @@ public class AuthApplication {
                 repository.save(new AuthUser(null, "alice", "password1", true));
             }
         };
+    }
+
+    @Bean
+    AccessTokenService accessTokenService(
+            @Value("${auth.jwt.secret}") String secret,
+            @Value("${auth.jwt.ttl-seconds}") long ttlSeconds) {
+        return new AccessTokenService(secret, ttlSeconds);
     }
 }

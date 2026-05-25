@@ -138,7 +138,7 @@ async function checkUserProxy() {
 async function validateToken(token) {
   const result = await request(`${apiBase}/validate-token?token=${encodeURIComponent(token)}`);
   setTokenState(result.valid ? 'Valid' : 'Invalid', result.valid ? 'status-ok' : 'status-bad');
-  showResponse(result, 'Token validation');
+  showResponse(result, 'Access token validation');
 }
 
 elements.loginForm.addEventListener('submit', async event => {
@@ -156,7 +156,7 @@ elements.loginForm.addEventListener('submit', async event => {
       method: 'POST',
       body: JSON.stringify({ username, password })
     });
-    setTokenState('Logged in', 'status-ok');
+    setTokenState('Access token issued', 'status-ok');
     showResponse(result, 'Login result');
   } catch (error) {
     setTokenState('Login failed', 'status-bad');
@@ -177,7 +177,7 @@ elements.tokenForm.addEventListener('submit', async event => {
     await validateToken(token);
   } catch (error) {
     setTokenState('Invalid', 'status-bad');
-    showResponse(`Token check failed: ${error.message}`, 'Error');
+    showResponse(`Access token check failed: ${error.message}`, 'Error');
   }
 });
 
@@ -214,8 +214,7 @@ elements.searchInput.addEventListener('input', renderUsers);
 
 Promise.all([
   loadAuthUsers(),
-  checkUserProxy(),
-  validateToken('token-alice-123')
+  checkUserProxy()
 ]).catch(error => {
   showResponse(`Startup check failed: ${error.message}`, 'Error');
 });

@@ -20,7 +20,7 @@
         <p class="eyebrow">My Management System</p>
         <h1>Operations portal for auth and user services</h1>
         <p class="lede">
-          Use this dashboard to sign in, validate tokens, inspect auth users, and reach the user service through the auth gateway.
+          Use this dashboard to sign in, validate access tokens, inspect auth users, and reach the user service through the auth gateway.
         </p>
       </div>
       <div class="topbar-meta">
@@ -41,9 +41,9 @@
         <p class="stat-note">Calls <span>/auth/users/{id}</span></p>
       </article>
       <article class="card stat-card">
-        <span class="stat-label">Token checks</span>
+        <span class="stat-label">Access token checks</span>
         <strong id="tokenState" class="stat-value status-warn">Idle</strong>
-        <p class="stat-note">Validates bearer-style demo tokens</p>
+        <p class="stat-note">Validates signed access tokens</p>
       </article>
     </section>
 
@@ -52,7 +52,7 @@
         <div class="panel-head">
           <div>
             <p class="section-kicker">Authenticate</p>
-            <h2>Login and token validator</h2>
+            <h2>Login and access token validator</h2>
           </div>
           <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh data</button>
         </div>
@@ -72,10 +72,10 @@
 
           <form id="tokenForm" class="stack">
             <label>
-              Token
-              <input id="tokenInput" type="text" placeholder="token-alice-123" />
+              Access token
+              <input id="tokenInput" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." />
             </label>
-            <button class="btn btn-secondary" type="submit">Validate token</button>
+            <button class="btn btn-secondary" type="submit">Validate access token</button>
           </form>
         </div>
 

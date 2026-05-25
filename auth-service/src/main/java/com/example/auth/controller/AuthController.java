@@ -6,6 +6,7 @@ import com.example.auth.model.LoginRequest;
 import com.example.auth.model.LoginResponse;
 import com.example.auth.model.TokenValidationResponse;
 import com.example.auth.repository.AuthUserRepository;
+import com.example.auth.service.AccessTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,12 @@ public class AuthController {
 
     private final AuthUserRepository authUserRepository;
     private final UserServiceClient userServiceClient;
+    private final AccessTokenService accessTokenService;
 
-    public AuthController(AuthUserRepository authUserRepository, UserServiceClient userServiceClient) {
+    public AuthController(AuthUserRepository authUserRepository, UserServiceClient userServiceClient, AccessTokenService accessTokenService) {
         this.authUserRepository = authUserRepository;
         this.userServiceClient = userServiceClient;
+        this.accessTokenService = accessTokenService;
     }
 
     @PostMapping("/login")
@@ -33,7 +36,7 @@ public class AuthController {
         return authUserRepository.findByUsername(payload.getUsername())
             .filter(user -> user.isEnabled() && user.getPassword().equals(payload.getPassword()))
             .map(user -> ResponseEntity.ok((Object) new LoginResponse(
-                "token-" + user.getUsername() + "-" + System.currentTimeMillis(),
+                accessTokenService.createToken(user.getUsername()),
                 "Bearer",
                 user.getUsername()
             )))
@@ -42,8 +45,8 @@ public class AuthController {
 
     @GetMapping("/validate-token")
     public ResponseEntity<TokenValidationResponse> validateToken(@RequestParam String token) {
-        boolean valid = token != null && token.startsWith("token-");
-        String username = valid ? token.replaceFirst("token-", "").split("-")[0] : null;
+        boolean valid = accessTokenService.isValid(token);
+        String username = accessTokenService.extractUsername(token);
         return ResponseEntity.ok(new TokenValidationResponse(valid, username));
     }
 

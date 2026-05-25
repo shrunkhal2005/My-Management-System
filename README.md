@@ -45,6 +45,15 @@ It lets you:
 - browse auth users through `/auth/users`
 - fetch user profiles through `/auth/users/{id}`
 
+## Deployment variables
+
+Set these on Render or any other host so the services can communicate outside localhost:
+
+- `AUTH_SERVICE_BASE_URL` for the user service
+- `USER_SERVICE_BASE_URL` for the auth service
+- `AUTH_JWT_SECRET` for signing access tokens
+- `AUTH_JWT_TTL_SECONDS` for access-token lifetime
+
 ## Docker
 
 The root [Dockerfile](Dockerfile) builds one service at a time using the `SERVICE_DIR` build argument.
