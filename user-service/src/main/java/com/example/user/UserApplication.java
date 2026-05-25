@@ -6,11 +6,29 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @SpringBootApplication
+@RestController
 public class UserApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);
+    }
+
+    @GetMapping("/")
+    public Map<String, Object> home() {
+        return Map.of(
+                "service", "user-service",
+                "status", "running",
+                "routes", Map.of(
+                        "users", "/users",
+                        "byUsername", "/users/by-username/{username}",
+                        "validateToken", "/users/validate-token?token=..."
+                )
+        );
     }
 
     @Bean
