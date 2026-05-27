@@ -69,6 +69,7 @@ Set these on Render or any other host so the services can communicate outside lo
 - `EUREKA_SERVER_URL` for both services, for example `http://your-eureka-host:8761/eureka`
 - `AUTH_JWT_SECRET` for signing access tokens
 - `AUTH_JWT_TTL_SECONDS` for access-token lifetime
+- `SPRING_DATASOURCE_URL` or the `MYSQLHOST`/`MYSQLPORT`/`MYSQLDATABASE` trio for the auth and user services
 
 ## Docker
 
