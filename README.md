@@ -101,6 +101,7 @@ This repo now includes `render.yaml` so Render can create all services as a Blue
 Notes:
 - Do not use `localhost` in datasource URLs on Render.
 - `auth-service`, `user-service`, `api-gateway`, and `eureka-server` each have their own Dockerfile now under their module folders.
+- The GitHub workflow `.github/workflows/ci-cd-deploy-render.yml` now runs Maven validation and can trigger Render deploy hooks via the `RENDER_DEPLOY_HOOK_URLS` secret (comma-separated hook URLs).
 
 ## Docker
 
