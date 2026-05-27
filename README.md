@@ -72,6 +72,36 @@ Set these on Render or any other host so the services can communicate outside lo
 - `SPRING_DATASOURCE_URL` or the `MYSQLHOST`/`MYSQLPORT`/`MYSQLDATABASE` trio for the auth and user services
 - `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` (or `MYSQLUSER` / `MYSQLPASSWORD`)
 
+## Render deployment
+
+This repo now includes `render.yaml` so Render can create all services as a Blueprint.
+
+1. In Render, click **New +** -> **Blueprint**.
+2. Select this GitHub repository.
+3. Render will detect `render.yaml` and show 4 services:
+	 - `eureka-server`
+	 - `api-gateway`
+	 - `auth-service`
+	 - `user-service`
+4. Fill required env vars (`sync: false`) before first deploy:
+	 - For `auth-service`:
+		 - `EUREKA_SERVER_URL` (for example `https://<eureka-host>/eureka`)
+		 - `AUTH_JWT_SECRET`
+		 - `SPRING_DATASOURCE_URL`
+		 - `SPRING_DATASOURCE_USERNAME`
+		 - `SPRING_DATASOURCE_PASSWORD`
+	 - For `user-service`:
+		 - `EUREKA_SERVER_URL`
+		 - `SPRING_DATASOURCE_URL`
+		 - `SPRING_DATASOURCE_USERNAME`
+		 - `SPRING_DATASOURCE_PASSWORD`
+	 - For `api-gateway`:
+		 - `EUREKA_SERVER_URL`
+
+Notes:
+- Do not use `localhost` in datasource URLs on Render.
+- `auth-service`, `user-service`, `api-gateway`, and `eureka-server` each have their own Dockerfile now under their module folders.
+
 ## Docker
 
 The root [Dockerfile](Dockerfile) builds one service at a time using the `SERVICE_DIR` build argument.

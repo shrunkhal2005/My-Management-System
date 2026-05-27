@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: eureka-server
+    env: docker
+    rootDir: eureka-server
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: api-gateway
+    env: docker
+    rootDir: api-gateway
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: EUREKA_SERVER_URL
+        sync: false
+
+  - type: web
+    name: auth-service
+    env: docker
+    rootDir: auth-service
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: EUREKA_SERVER_URL
+        sync: false
+      - key: AUTH_JWT_SECRET
+        sync: false
+      - key: AUTH_JWT_TTL_SECONDS
+        value: 7200
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+
+  - type: web
+    name: user-service
+    env: docker
+    rootDir: user-service
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: EUREKA_SERVER_URL
+        sync: false
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
