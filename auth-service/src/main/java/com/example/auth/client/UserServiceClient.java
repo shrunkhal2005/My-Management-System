@@ -1,6 +1,5 @@
 package com.example.auth.client;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +10,15 @@ import java.util.Map;
 
 @Component
 public class UserServiceClient {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
-    @Value("${user.service.base-url}")
-    private String baseUrl;
+    public UserServiceClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public Map<String, Object> getUserById(Long id) {
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                baseUrl + "/users/" + id,
+                "http://user-service/users/" + id,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<>() {}

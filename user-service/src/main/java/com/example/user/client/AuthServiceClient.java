@@ -1,20 +1,20 @@
 package com.example.user.client;
 
 import com.example.user.model.TokenValidationResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AuthServiceClient {
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
-    @Value("${auth.service.base-url}")
-    private String baseUrl;
+    public AuthServiceClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public TokenValidationResponse validateToken(String token) {
         return restTemplate.getForObject(
-                baseUrl + "/auth/validate-token?token=" + token,
+                "http://auth-service/auth/validate-token?token=" + token,
                 TokenValidationResponse.class
         );
     }
