@@ -71,6 +71,7 @@ Set these on Render or any other host so the services can communicate outside lo
 - `AUTH_JWT_TTL_SECONDS` for access-token lifetime
 - `SPRING_DATASOURCE_URL` or the `MYSQLHOST`/`MYSQLPORT`/`MYSQLDATABASE` trio for the auth and user services
 - `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` (or `MYSQLUSER` / `MYSQLPASSWORD`)
+- `DATABASE_URL` / `DATABASE_USERNAME` / `DATABASE_PASSWORD` are also supported as fallbacks
 
 ## Render deployment
 
