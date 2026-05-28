@@ -70,4 +70,36 @@ public class AuthController {
     public ResponseEntity<List<AuthUser>> listAuthUsers() {
         return ResponseEntity.ok(authUserRepository.findAll());
     }
+
+    @PostMapping("/users")
+    public ResponseEntity<?> createAuthUser(@RequestBody Map<String, Object> payload) {
+        String username = payload.get("username") == null ? "" : String.valueOf(payload.get("username")).trim();
+        String password = payload.get("password") == null ? "" : String.valueOf(payload.get("password")).trim();
+
+        if (username.isBlank() || password.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "missing_username_or_password"));
+        }
+
+        if (authUserRepository.findByUsername(username).isPresent()) {
+            return ResponseEntity.status(409).body(Map.of("error", "username_already_exists"));
+        }
+
+        boolean enabled = true;
+        if (payload.containsKey("enabled")) {
+            enabled = Boolean.parseBoolean(String.valueOf(payload.get("enabled")));
+        }
+
+        AuthUser created = authUserRepository.save(new AuthUser(null, username, password, enabled));
+        return ResponseEntity.ok(created);
+    }
+
+    @DeleteMapping("/users/auth/{id}")
+    public ResponseEntity<?> deleteAuthUser(@PathVariable Long id) {
+        if (!authUserRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        authUserRepository.deleteById(id);
+        return ResponseEntity.ok(Map.of("deleted", true, "id", id));
+    }
 }

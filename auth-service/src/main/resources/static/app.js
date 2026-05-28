@@ -14,6 +14,10 @@ const elements = {
   responseBox: document.getElementById('responseBox'),
   refreshBtn: document.getElementById('refreshBtn'),
   searchInput: document.getElementById('searchInput'),
+  createUserForm: document.getElementById('createUserForm'),
+  createUsername: document.getElementById('createUsername'),
+  createPassword: document.getElementById('createPassword'),
+  createEnabled: document.getElementById('createEnabled'),
   loginForm: document.getElementById('loginForm'),
   lookupForm: document.getElementById('lookupForm'),
   loginUsername: document.getElementById('loginUsername'),
@@ -99,7 +103,7 @@ function renderUsers() {
   if (filtered.length === 0) {
     elements.usersTable.innerHTML = `
       <tr>
-        <td colspan="4" class="empty-row">No auth users found.</td>
+        <td colspan="5" class="empty-row">No auth users found.</td>
       </tr>
     `;
     return;
@@ -111,6 +115,7 @@ function renderUsers() {
       <td>${escapeHtml(user.username)}</td>
       <td>${escapeHtml(user.password)}</td>
       <td>${escapeHtml(user.enabled)}</td>
+      <td><button class="btn btn-secondary delete-user-btn" type="button" data-id="${escapeHtml(user.id)}">Delete</button></td>
     </tr>
   `).join('');
 }
@@ -215,6 +220,54 @@ elements.refreshBtn.addEventListener('click', async () => {
 });
 
 elements.searchInput.addEventListener('input', renderUsers);
+
+elements.createUserForm.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const username = elements.createUsername.value.trim();
+  const password = elements.createPassword.value.trim();
+  const enabled = elements.createEnabled.value === 'true';
+
+  if (!username || !password) {
+    showResponse('Username and password are required.', 'Validation');
+    return;
+  }
+
+  try {
+    const created = await request(`${apiBase}/users`, {
+      method: 'POST',
+      body: JSON.stringify({ username, password, enabled })
+    });
+    showResponse(created, 'User created');
+    elements.createUserForm.reset();
+    elements.createEnabled.value = 'true';
+    await loadAuthUsers();
+  } catch (error) {
+    showResponse(`Unable to create user: ${error.message}`, 'Error');
+  }
+});
+
+elements.usersTable.addEventListener('click', async event => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || !target.classList.contains('delete-user-btn')) {
+    return;
+  }
+
+  const id = target.getAttribute('data-id');
+  if (!id) {
+    return;
+  }
+
+  try {
+    const result = await request(`${apiBase}/users/auth/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    showResponse(result, `Deleted user #${id}`);
+    await loadAuthUsers();
+  } catch (error) {
+    showResponse(`Unable to delete user #${id}: ${error.message}`, 'Error');
+  }
+});
 
 Promise.all([
   loadAuthUsers(),
