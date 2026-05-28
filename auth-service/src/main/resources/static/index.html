@@ -52,30 +52,22 @@
         <div class="panel-head">
           <div>
             <p class="section-kicker">Authenticate</p>
-            <h2>Login and access token validator</h2>
+            <h2>Login</h2>
           </div>
           <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh data</button>
         </div>
 
-        <div class="auth-grid">
-          <form id="loginForm" class="stack">
-            <label>
-              Username
-              <input id="loginUsername" type="text" placeholder="alice" value="alice" autocomplete="username" required />
-            </label>
-            <label>
-              Password
-              <input id="loginPassword" type="password" placeholder="password1" value="password1" autocomplete="current-password" required />
-            </label>
-            <button class="btn btn-primary" type="submit">Login</button>
-          </form>
-
-          <div class="stack">
-            <p class="mini-title">Access token</p>
-            <p class="stat-note">Generated automatically after login. Use the button below to validate the latest token.</p>
-            <button id="validateTokenBtn" class="btn btn-secondary" type="button" disabled>Validate latest token</button>
-          </div>
-        </div>
+        <form id="loginForm" class="stack">
+          <label>
+            Username
+            <input id="loginUsername" type="text" placeholder="alice" value="alice" autocomplete="username" required />
+          </label>
+          <label>
+            Password
+            <input id="loginPassword" type="password" placeholder="password1" value="password1" autocomplete="current-password" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Login</button>
+        </form>
 
         <div class="response-box" id="responseBox">
           <p class="response-empty">Response output will appear here.</p>

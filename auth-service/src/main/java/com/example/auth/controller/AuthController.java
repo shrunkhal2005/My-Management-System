@@ -1,6 +1,7 @@
 package com.example.auth.controller;
 
 import com.example.auth.entity.AuthUser;
+import com.example.auth.entity.UserProfile;
 import com.example.auth.model.LoginRequest;
 import com.example.auth.model.LoginResponse;
 import com.example.auth.model.TokenValidationResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -52,18 +54,29 @@ public class AuthController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<Map<String, Object>> proxyUser(@PathVariable Long id) {
-        return userProfileRepository.findById(id)
-            .map(user -> {
-                Map<String, Object> profile = Map.of(
-                    "id", user.getId(),
-                    "username", user.getUsername(),
-                    "displayName", user.getDisplayName(),
-                    "email", user.getEmail(),
-                    "source", "auth-service-local"
-                );
-                return ResponseEntity.ok(profile);
-            })
-            .orElse(ResponseEntity.notFound().build());
+        Optional<AuthUser> authUserOptional = authUserRepository.findById(id);
+        if (authUserOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        AuthUser authUser = authUserOptional.get();
+        UserProfile profile = userProfileRepository.findByUsername(authUser.getUsername())
+            .orElseGet(() -> userProfileRepository.save(new UserProfile(
+                null,
+                authUser.getUsername(),
+                authUser.getUsername(),
+                authUser.getUsername() + "@example.com"
+            )));
+
+        Map<String, Object> response = Map.of(
+            "id", authUser.getId(),
+            "username", authUser.getUsername(),
+            "displayName", profile.getDisplayName(),
+            "email", profile.getEmail(),
+            "enabled", authUser.isEnabled(),
+            "source", "auth-service-local"
+        );
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users")
@@ -90,16 +103,23 @@ public class AuthController {
         }
 
         AuthUser created = authUserRepository.save(new AuthUser(null, username, password, enabled));
+        userProfileRepository.findByUsername(username).orElseGet(() -> userProfileRepository.save(
+            new UserProfile(null, username, username, username + "@example.com")
+        ));
         return ResponseEntity.ok(created);
     }
 
     @DeleteMapping("/users/auth/{id}")
     public ResponseEntity<?> deleteAuthUser(@PathVariable Long id) {
-        if (!authUserRepository.existsById(id)) {
+        Optional<AuthUser> authUserOptional = authUserRepository.findById(id);
+        if (authUserOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
+        AuthUser authUser = authUserOptional.get();
         authUserRepository.deleteById(id);
+        userProfileRepository.findByUsername(authUser.getUsername())
+            .ifPresent(existingProfile -> userProfileRepository.deleteById(existingProfile.getId()));
         return ResponseEntity.ok(Map.of("deleted", true, "id", id));
     }
 }

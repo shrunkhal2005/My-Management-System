@@ -1,8 +1,7 @@
 const apiBase = '/auth';
 
 const state = {
-  users: [],
-  currentToken: ''
+  users: []
 };
 
 const elements = {
@@ -22,7 +21,6 @@ const elements = {
   lookupForm: document.getElementById('lookupForm'),
   loginUsername: document.getElementById('loginUsername'),
   loginPassword: document.getElementById('loginPassword'),
-  validateTokenBtn: document.getElementById('validateTokenBtn'),
   lookupId: document.getElementById('lookupId')
 };
 
@@ -51,11 +49,6 @@ function setState(text, className = 'status-warn') {
 function setTokenState(text, className) {
   elements.tokenState.textContent = text;
   elements.tokenState.className = `stat-value ${className}`;
-}
-
-function setCurrentToken(token) {
-  state.currentToken = token || '';
-  elements.validateTokenBtn.disabled = !state.currentToken;
 }
 
 function setProxyState(text, className) {
@@ -145,7 +138,7 @@ async function checkUserProxy() {
   }
 }
 
-async function validateToken(token = state.currentToken) {
+async function validateToken(token) {
   if (!token) {
     throw new Error('No access token is available yet. Log in first.');
   }
@@ -171,22 +164,12 @@ elements.loginForm.addEventListener('submit', async event => {
       method: 'POST',
       body: JSON.stringify({ username, password })
     });
-    setCurrentToken(result.accessToken);
-    setTokenState('Access token issued', 'status-ok');
-    showResponse(result, 'Login result');
-    await validateToken(result.accessToken);
+    const validation = await validateToken(result.accessToken);
+    setTokenState(validation.valid ? 'Valid' : 'Invalid', validation.valid ? 'status-ok' : 'status-bad');
+    showResponse({ login: result, validation }, 'Login result');
   } catch (error) {
     setTokenState('Login failed', 'status-bad');
     showResponse(`Login failed: ${error.message}`, 'Error');
-  }
-});
-
-elements.validateTokenBtn.addEventListener('click', async () => {
-  try {
-    await validateToken();
-  } catch (error) {
-    setTokenState('Invalid', 'status-bad');
-    showResponse(`Access token check failed: ${error.message}`, 'Error');
   }
 });
 
@@ -275,5 +258,3 @@ Promise.all([
 ]).catch(error => {
   showResponse(`Startup check failed: ${error.message}`, 'Error');
 });
-
-setCurrentToken('');
