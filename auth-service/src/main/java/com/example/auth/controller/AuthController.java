@@ -1,11 +1,11 @@
 package com.example.auth.controller;
 
-import com.example.auth.client.UserServiceClient;
 import com.example.auth.entity.AuthUser;
 import com.example.auth.model.LoginRequest;
 import com.example.auth.model.LoginResponse;
 import com.example.auth.model.TokenValidationResponse;
 import com.example.auth.repository.AuthUserRepository;
+import com.example.auth.repository.UserProfileRepository;
 import com.example.auth.service.AccessTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthUserRepository authUserRepository;
-    private final UserServiceClient userServiceClient;
+    private final UserProfileRepository userProfileRepository;
     private final AccessTokenService accessTokenService;
 
-    public AuthController(AuthUserRepository authUserRepository, UserServiceClient userServiceClient, AccessTokenService accessTokenService) {
+    public AuthController(AuthUserRepository authUserRepository, UserProfileRepository userProfileRepository, AccessTokenService accessTokenService) {
         this.authUserRepository = authUserRepository;
-        this.userServiceClient = userServiceClient;
+        this.userProfileRepository = userProfileRepository;
         this.accessTokenService = accessTokenService;
     }
 
@@ -52,11 +52,18 @@ public class AuthController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<Map<String, Object>> proxyUser(@PathVariable Long id) {
-        Map<String, Object> user = userServiceClient.getUserById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+        return userProfileRepository.findById(id)
+            .map(user -> {
+                Map<String, Object> profile = Map.of(
+                    "id", user.getId(),
+                    "username", user.getUsername(),
+                    "displayName", user.getDisplayName(),
+                    "email", user.getEmail(),
+                    "source", "auth-service-local"
+                );
+                return ResponseEntity.ok(profile);
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/users")

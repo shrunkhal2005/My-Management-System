@@ -1,7 +1,9 @@
 package com.example.auth;
 
 import com.example.auth.entity.AuthUser;
+import com.example.auth.entity.UserProfile;
 import com.example.auth.repository.AuthUserRepository;
+import com.example.auth.repository.UserProfileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.boot.SpringApplication;
@@ -25,11 +27,16 @@ public class AuthApplication {
     }
 
     @Bean
-    CommandLineRunner seedAuthUsers(AuthUserRepository repository) {
+    CommandLineRunner seedAuthUsers(AuthUserRepository repository, UserProfileRepository profileRepository) {
         return args -> {
             if (repository.count() == 0) {
                 repository.save(new AuthUser(null, "admin", "admin123", true));
                 repository.save(new AuthUser(null, "alice", "password1", true));
+            }
+
+            if (profileRepository.count() == 0) {
+                profileRepository.save(new UserProfile(null, "alice", "Alice Example", "alice@example.com"));
+                profileRepository.save(new UserProfile(null, "bob", "Bob Example", "bob@example.com"));
             }
         };
     }
