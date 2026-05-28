@@ -61,22 +61,20 @@
           <form id="loginForm" class="stack">
             <label>
               Username
-              <input id="loginUsername" type="text" placeholder="alice" autocomplete="username" required />
+              <input id="loginUsername" type="text" placeholder="alice" value="alice" autocomplete="username" required />
             </label>
             <label>
               Password
-              <input id="loginPassword" type="password" placeholder="password1" autocomplete="current-password" required />
+              <input id="loginPassword" type="password" placeholder="password1" value="password1" autocomplete="current-password" required />
             </label>
             <button class="btn btn-primary" type="submit">Login</button>
           </form>
 
-          <form id="tokenForm" class="stack">
-            <label>
-              Access token
-              <input id="tokenInput" type="text" placeholder="eyJhbGciOiJIUzI1NiIs..." />
-            </label>
-            <button class="btn btn-secondary" type="submit">Validate access token</button>
-          </form>
+          <div class="stack">
+            <p class="mini-title">Access token</p>
+            <p class="stat-note">Generated automatically after login. Use the button below to validate the latest token.</p>
+            <button id="validateTokenBtn" class="btn btn-secondary" type="button" disabled>Validate latest token</button>
+          </div>
         </div>
 
         <div class="response-box" id="responseBox">

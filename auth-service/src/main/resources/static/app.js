@@ -1,7 +1,8 @@
 const apiBase = '/auth';
 
 const state = {
-  users: []
+  users: [],
+  currentToken: ''
 };
 
 const elements = {
@@ -14,11 +15,10 @@ const elements = {
   refreshBtn: document.getElementById('refreshBtn'),
   searchInput: document.getElementById('searchInput'),
   loginForm: document.getElementById('loginForm'),
-  tokenForm: document.getElementById('tokenForm'),
   lookupForm: document.getElementById('lookupForm'),
   loginUsername: document.getElementById('loginUsername'),
   loginPassword: document.getElementById('loginPassword'),
-  tokenInput: document.getElementById('tokenInput'),
+  validateTokenBtn: document.getElementById('validateTokenBtn'),
   lookupId: document.getElementById('lookupId')
 };
 
@@ -47,6 +47,11 @@ function setState(text, className = 'status-warn') {
 function setTokenState(text, className) {
   elements.tokenState.textContent = text;
   elements.tokenState.className = `stat-value ${className}`;
+}
+
+function setCurrentToken(token) {
+  state.currentToken = token || '';
+  elements.validateTokenBtn.disabled = !state.currentToken;
 }
 
 function setProxyState(text, className) {
@@ -135,10 +140,15 @@ async function checkUserProxy() {
   }
 }
 
-async function validateToken(token) {
+async function validateToken(token = state.currentToken) {
+  if (!token) {
+    throw new Error('No access token is available yet. Log in first.');
+  }
+
   const result = await request(`${apiBase}/validate-token?token=${encodeURIComponent(token)}`);
   setTokenState(result.valid ? 'Valid' : 'Invalid', result.valid ? 'status-ok' : 'status-bad');
   showResponse(result, 'Access token validation');
+  return result;
 }
 
 elements.loginForm.addEventListener('submit', async event => {
@@ -156,25 +166,19 @@ elements.loginForm.addEventListener('submit', async event => {
       method: 'POST',
       body: JSON.stringify({ username, password })
     });
+    setCurrentToken(result.accessToken);
     setTokenState('Access token issued', 'status-ok');
     showResponse(result, 'Login result');
+    await validateToken(result.accessToken);
   } catch (error) {
     setTokenState('Login failed', 'status-bad');
     showResponse(`Login failed: ${error.message}`, 'Error');
   }
 });
 
-elements.tokenForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  const token = elements.tokenInput.value.trim();
-
-  if (!token) {
-    showResponse('Enter a token first.', 'Validation');
-    return;
-  }
-
+elements.validateTokenBtn.addEventListener('click', async () => {
   try {
-    await validateToken(token);
+    await validateToken();
   } catch (error) {
     setTokenState('Invalid', 'status-bad');
     showResponse(`Access token check failed: ${error.message}`, 'Error');
@@ -218,3 +222,5 @@ Promise.all([
 ]).catch(error => {
   showResponse(`Startup check failed: ${error.message}`, 'Error');
 });
+
+setCurrentToken('');
